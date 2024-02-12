@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-service-operator
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: proxy-service-operator
+  template:
+    metadata:
+      labels:
+        app: proxy-service-operator
+    spec:
+      serviceAccountName: proxy-service-account
+      containers:
+      - name: proxy-service
+        image: msvcbench/proxy-service-operator:latest
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"

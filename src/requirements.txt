@@ -1,0 +1,3 @@
+kubernetes==28.1.0
+kopf==1.36.2
+pykube-ng==23.6.0

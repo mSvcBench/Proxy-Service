@@ -1,0 +1,10 @@
+---
+apiVersion: msvcbench.io/v1alpha1
+kind: ProxyService
+metadata:
+  name: ps-s0
+spec:
+  serviceName: sn0
+  loadBalancer: LEAST_REQUEST
+  target: sn0-ep
+  port: 80
