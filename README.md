@@ -2,10 +2,12 @@
 
 Proxy-Service is a novel [Kubernetes custom resource](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) aimed to recover the effectiveness of [least request](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers) load balancing algorithm for microservice applications where replication is massively used.
 
-<div style="display: flex;">
-    <img src="doc/service-mesh.png" alt="Proxy-Mesh" style="width: 50%;">
-    <img src="doc/proxy-service.png" alt="Proxy-Service" style="width: 50%;">
-</div>
+<p float="center">
+  <img src="doc/service-mesh.png" height="175" width="320" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="doc/proxy-service.png" height="175" width="320" />
+</p>
+
 
 If you have a Kubernetes cluster and Istio installed, you can use the `proxy-service-operator` to handle the `Proxy-Service` custom resources.
 The operator will create a new `proxyservice` resource, made of a combination of a Kubernetes Deployment, Service and Horizontal Pod Autoscaler (HPA), that handles the life cycle of a new Istio Gateway, Virtual Service and Destination Rule resources.
