@@ -15,6 +15,14 @@ yaml_istio_ingress = "./ingress.yaml"
 
 @kopf.on.create('proxyservices')
 def create_fn(body, spec, **kwargs):
+
+    svc_ps = body['metadata']['name']
+    namespace = body['metadata']['namespace']
+    svc_to_delete = body['spec']['serviceName']
+    svc_to_create = body['spec']['target']
+
+    overwrite_svc(svc_to_delete, svc_to_create, namespace)
+
     try:
         name = body['metadata']['name']
         k8s_resources = get_yaml(yaml_istio_ingress, body)
@@ -34,20 +42,63 @@ def create_fn(body, spec, **kwargs):
         logger.exception(f"Error creating proxy-service resource: {err}")
 
 
+def overwrite_svc(svc_to_delete, svc_to_create, namespace):
+    api_instance = client.CoreV1Api()
+    try:
+        body_response = api_instance.read_namespaced_service(svc_to_delete, namespace)
+
+        svc_to_create_dict = body_response.to_dict()
+        svc_to_create_dict['metadata']['name'] = svc_to_create
+        svc_to_create_dict['spec']['selector']['app'] = svc_to_create
+        svc_to_create_modified = client.V1Service(**svc_to_create_dict)
+
+        # make sure svc deleted
+        try:
+            api_instance.delete_namespaced_service(name=svc_to_create, namespace=namespace)
+            logger.info(f"Deleted svc {svc_to_create}")
+        except ApiException as e:
+            print(f"Exception when trying to delete service: {e}")
+        
+        # delete old svc
+        try:
+            api_instance.delete_namespaced_service(name=svc_to_delete, namespace=namespace)
+            logger.info(f"Deleted svc {svc_to_delete}")
+        except ApiException as e:
+            print(f"Exception when trying to delete service: {e}")
+
+        # apply new svc
+        try:
+            api_instance.create_namespaced_service(namespace=namespace, body=svc_to_create_modified)
+            logger.info(f"Created svc {svc_to_create}")
+        except ApiException as e:
+            print(f"Exception when trying to create service: {e}")
+    
+    except Exception as e:
+        print(f"Exception when trying to overwrite services: {e}")
+
+
+
 @kopf.on.delete('proxyservices')
 def delete_fn(body, spec, **kwargs):
     try:
-        name = body['metadata']['name']
+        svc_ps = body['metadata']['name']
+        namespace = body['metadata']['namespace']
+        svc_to_create = body['spec']['serviceName']
+        svc_to_delete = body['spec']['target']
+
         k8s_resources = get_yaml(yaml_istio_ingress, body)
         api = pykube.HTTPClient(pykube.KubeConfig.from_env())
-
+        
         for k8s_resource in k8s_resources:
-            logger.info(f"Deleting {k8s_resource['kind']} for {name}")
+            logger.info(f"Deleting {k8s_resource['kind']} for {svc_ps}")
             k8s_delete(k8s_resource, api)
 
         delete_istio_stuff(body)
+
+        overwrite_svc(svc_to_delete, svc_to_create, namespace)
+        
         api.session.close()
-        return {'message': f'Deleted all proxyservices of {name}'}
+        return {'message': f'Deleted all proxyservices of {svc_ps}'}
     except Exception as err:
         logger.exception(f"Error deleting proxy-service resource: {err}")
 
@@ -106,8 +157,9 @@ def k8s_delete(k8s_resource, api):
             pykube.RoleBinding(api, k8s_resource).delete()
             logger.info("RoleBinding deleted")
         elif k8s_resource['kind'] == 'Service':
-            pykube.Service(api, k8s_resource).delete()
-            logger.info("Service deleted")
+            pass
+        #     pykube.Service(api, k8s_resource).delete()
+        #     logger.info("Service deleted")
         elif k8s_resource['kind'] == 'Deployment':
             pykube.Deployment(api, k8s_resource).delete()
             logger.info("Deployment deleted")
