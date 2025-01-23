@@ -1,0 +1,139 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: carts
+spec:
+  host: carts
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: carts-db
+spec:
+  host: carts-db
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: catalogue
+spec:
+  host: catalogue
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: catalogue-db
+spec:
+  host: catalogue-db
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: front-end
+spec:
+  host: front-end
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: orders
+spec:
+  host: orders
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: orders-db
+spec:
+  host: orders-db
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: payment
+spec:
+  host: payment
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: queue-master
+spec:
+  host: queue-master
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: rabbitmq
+spec:
+  host: rabbitmq
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: session-db
+spec:
+  host: session-db
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: shipping
+spec:
+  host: shipping
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: user
+spec:
+  host: user
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: user-db
+spec:
+  host: user-db
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_REQUEST

@@ -1,0 +1,302 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carts-db
+  labels:
+    app: carts-db
+  namespace: sock-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: carts-db
+  template:
+    metadata:
+      labels:
+        app: carts-db
+    spec:
+      containers:
+        - name: carts-db
+          image: mongo:5.0.11
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 500Mi
+            requests:
+              cpu: 1000m
+              memory: 300Mi
+          ports:
+            - name: mongo
+              containerPort: 27017
+          securityContext:
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: carts-db
+  labels:
+    app: carts-db
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 27017
+      targetPort: 27017
+      appProtocol: mongo
+  selector:
+    app: carts-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogue-db
+  labels:
+    app: catalogue-db
+  namespace: sock-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalogue-db
+  template:
+    metadata:
+      labels:
+        app: catalogue-db
+    spec:
+      containers:
+        - name: catalogue-db
+          image: weaveworksdemos/catalogue-db:0.3.0
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 500Mi
+            requests:
+              cpu: 1000m
+              memory: 300Mi
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: fake_password
+            - name: MYSQL_DATABASE
+              value: socksdb
+          ports:
+            - name: mysql
+              containerPort: 3306
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue-db
+  labels:
+    app: catalogue-db
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 3306
+      targetPort: 3306
+      appProtocol: mysql
+  selector:
+    app: catalogue-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-db
+  labels:
+    app: orders-db
+  namespace: sock-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-db
+  template:
+    metadata:
+      labels:
+        app: orders-db
+    spec:
+      containers:
+        - name: orders-db
+          image: mongo:5.0.11
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 500Mi
+            requests:
+              cpu: 1000m
+              memory: 300Mi
+          ports:
+            - name: mongo
+              containerPort: 27017
+          securityContext:
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-db
+  labels:
+    app: orders-db
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 27017
+      targetPort: 27017
+      appProtocol: mongo
+  selector:
+    app: orders-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: session-db
+  labels:
+    app: session-db
+  namespace: sock-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: session-db
+  template:
+    metadata:
+      labels:
+        app: session-db
+      annotations:
+        prometheus.io.scrape: "false"
+    spec:
+      containers:
+        - name: session-db
+          image: redis:alpine
+          ports:
+            - name: redis
+              containerPort: 6379
+          securityContext:
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+            readOnlyRootFilesystem: true
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: session-db
+  labels:
+    app: session-db
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 6379
+      targetPort: 6379
+      appProtocol: redis
+  selector:
+    app: session-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-db
+  labels:
+    app: user-db
+  namespace: sock-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-db
+  template:
+    metadata:
+      labels:
+        app: user-db
+    spec:
+      containers:
+        - name: user-db
+          image: weaveworksdemos/user-db:0.3.0
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 500Mi
+            requests:
+              cpu: 1000m
+              memory: 300Mi
+          ports:
+            - name: mongo
+              containerPort: 27017
+          securityContext:
+            capabilities:
+              drop:
+                - all
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-db
+  labels:
+    app: user-db
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 27017
+      targetPort: 27017
+      appProtocol: mongo
+  selector:
+    app: user-db

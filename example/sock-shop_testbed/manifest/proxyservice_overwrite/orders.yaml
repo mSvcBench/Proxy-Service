@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-target
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    app: orders
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 80
+      targetPort: 80
+      appProtocol: http
+  selector:
+    app: orders
+---
+apiVersion: mubench.com/v1alpha1
+kind: ProxyService
+metadata:
+  name: orders-proxy
+  namespace: sock-shop
+spec:
+  serviceName: orders
+  loadBalancer: LEAST_REQUEST
+  target: orders-target
+  port: 80
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: DestinationRule
+# metadata:
+#   name: orders
+# spec:
+#     host: orders
+#     trafficPolicy:
+#       loadBalancer:
+#         simple: LEAST_REQUEST

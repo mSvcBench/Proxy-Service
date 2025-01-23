@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: queue-master-target
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    app: queue-master
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 80
+      targetPort: 80
+      appProtocol: http
+  selector:
+    app: queue-master
+---
+apiVersion: mubench.com/v1alpha1
+kind: ProxyService
+metadata:
+  name: queue-master-proxy
+  namespace: sock-shop
+spec:
+  serviceName: queue-master
+  loadBalancer: LEAST_REQUEST
+  target: queue-master-target
+  port: 80
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: DestinationRule
+# metadata:
+#   name: queue-master
+# spec:
+#     host: queue-master
+#     trafficPolicy:
+#       loadBalancer:
+#         simple: LEAST_REQUEST

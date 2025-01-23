@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping-target
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    app: shipping
+  namespace: sock-shop
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 80
+      targetPort: 80
+      appProtocol: http
+  selector:
+    app: shipping
+---
+apiVersion: mubench.com/v1alpha1
+kind: ProxyService
+metadata:
+  name: shipping-proxy
+  namespace: sock-shop
+spec:
+  serviceName: shipping
+  loadBalancer: LEAST_REQUEST
+  target: shipping-target
+  port: 80
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: DestinationRule
+# metadata:
+#   name: shipping
+# spec:
+#     host: shipping
+#     trafficPolicy:
+#       loadBalancer:
+#         simple: LEAST_REQUEST
