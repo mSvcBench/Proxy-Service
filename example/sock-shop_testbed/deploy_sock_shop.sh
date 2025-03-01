@@ -18,37 +18,37 @@ if [ "$1" == "apply" ]; then
 elif [ "$1" == "scale" ]; then
     echo ":: Scaling the sock-shop application."
     set -x
-    kubectl scale deployment carts --replicas=8
-    kubectl scale deployment carts-db --replicas=1
-    kubectl scale deployment catalogue --replicas=5
-    kubectl scale deployment catalogue-db --replicas=1
-    kubectl scale deployment front-end --replicas=30
-    kubectl scale deployment orders --replicas=7
-    kubectl scale deployment orders-db --replicas=1
-    kubectl scale deployment payment --replicas=5
-    kubectl scale deployment queue-master --replicas=10
-    kubectl scale deployment rabbitmq --replicas=5
-    kubectl scale deployment session-db --replicas=1
-    kubectl scale deployment shipping --replicas=10
-    kubectl scale deployment user --replicas=9
-    kubectl scale deployment user-db --replicas=1
+    kubectl scale deployment carts --replicas=8 -n sock-shop
+    kubectl scale deployment carts-db --replicas=1 -n sock-shop
+    kubectl scale deployment catalogue --replicas=5 -n sock-shop
+    kubectl scale deployment catalogue-db --replicas=1 -n sock-shop
+    kubectl scale deployment front-end --replicas=30 -n sock-shop
+    kubectl scale deployment orders --replicas=7 -n sock-shop
+    kubectl scale deployment orders-db --replicas=1 -n sock-shop
+    kubectl scale deployment payment --replicas=5 -n sock-shop
+    kubectl scale deployment queue-master --replicas=10 -n sock-shop
+    kubectl scale deployment rabbitmq --replicas=5 -n sock-shop
+    kubectl scale deployment session-db --replicas=1 -n sock-shop
+    kubectl scale deployment shipping --replicas=10 -n sock-shop
+    kubectl scale deployment user --replicas=9 -n sock-shop
+    kubectl scale deployment user-db --replicas=1 -n sock-shop
 
 elif [ "$1" == "proxy-service" ]; then
     echo ":: Replacing the original services with the proxy-services ones."
     set -x
-    kubectl delete svc carts
+    kubectl delete svc carts -n sock-shop
     kubectl apply -f manifest/proxyservice_overwrite/carts.yaml
-    kubectl delete svc catalogue
+    kubectl delete svc catalogue -n sock-shop
     kubectl apply -f manifest/proxyservice_overwrite/catalogue.yaml
-    kubectl delete svc orders
+    kubectl delete svc orders -n sock-shop
     kubectl apply -f manifest/proxyservice_overwrite/orders.yaml
-    kubectl delete svc payment
+    kubectl delete svc payment -n sock-shop
     kubectl apply -f manifest/proxyservice_overwrite/payment.yaml
-    kubectl delete svc queue-master
+    kubectl delete svc queue-master -n sock-shop
     kubectl apply -f manifest/proxyservice_overwrite/queue-master.yaml
-    kubectl delete svc shipping
+    kubectl delete svc shipping -n sock-shop
     kubectl apply -f manifest/proxyservice_overwrite/shipping.yaml
-    kubectl delete svc user
+    kubectl delete svc user -n sock-shop
     kubectl apply -f manifest/proxyservice_overwrite/user.yaml
 
 elif [ "$1" == "ps-delete" ]; then

@@ -17,7 +17,7 @@ spec:
   selector:
     app: user
 ---
-apiVersion: mubench.com/v1alpha1
+apiVersion: msvcbench.io/v1alpha1
 kind: ProxyService
 metadata:
   name: user-proxy

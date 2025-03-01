@@ -6,8 +6,7 @@ from random import randint, choice
 import itertools, time
 
 user_id_counter = itertools.count()
-main_host = "http://160.80.223.224:30309"
-# main_host = "http://192.168.10.90:30309"
+main_host = "http://192.168.10.90:30309"
 
 class RegTasks(TaskSet):
     def __init__(self, *args, **kwargs):

@@ -17,7 +17,7 @@ spec:
   selector:
     app: shipping
 ---
-apiVersion: mubench.com/v1alpha1
+apiVersion: msvcbench.io/v1alpha1
 kind: ProxyService
 metadata:
   name: shipping-proxy
